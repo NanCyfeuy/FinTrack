@@ -1,0 +1,125 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keuanganku"
+                android:textColor="@color/purple_primary"
+                android:textStyle="bold"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Tambah Transaksi"
+            android:textColor="@color/purple_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView style="@style/LabelForm" android:text="Judul Transaksi *" />
+                <EditText
+                    android:id="@+id/etTitle"
+                    style="@style/InputForm"
+                    android:hint="Gaji Bulan Ini" />
+
+                <TextView style="@style/LabelForm" android:text="Nominal (Rp) *" />
+                <EditText
+                    android:id="@+id/etAmount"
+                    style="@style/InputForm"
+                    android:hint="5000000"
+                    android:inputType="number" />
+
+                <TextView style="@style/LabelForm" android:text="Tipe Transaksi *" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnTypeIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_btn_type_selected_income"
+                        android:text="Pemasukan"
+                        android:textAllCaps="false"
+                        android:textSize="14dp"
+                        android:textColor="@color/income_green" />
+
+                    <View android:layout_width="12dp" android:layout_height="match_parent"/>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnTypeExpense"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_btn_type_unselected"
+                        android:text="Pengeluaran"
+                        android:textAllCaps="false"
+                        android:textSize="14dp"
+                        android:textColor="#9E9E9E" />
+                </LinearLayout>
+
+                <TextView style="@style/LabelForm" android:text="Kategori" />
+                <EditText
+                    android:id="@+id/etCategory"
+                    style="@style/InputForm"
+                    android:hint="Gaji" />
+
+                <TextView style="@style/LabelForm" android:text="Catatan (opsional)" />
+                <EditText
+                    android:id="@+id/etNotes"
+                    style="@style/InputForm"
+                    android:hint="Tambah catatan..."
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:lines="3" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/purple_primary"
+            android:text="SIMPAN TRANSAKSI"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+</ScrollView>
