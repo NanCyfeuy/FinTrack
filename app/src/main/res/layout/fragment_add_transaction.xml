@@ -54,6 +54,8 @@
                 <EditText
                     android:id="@+id/etTitle"
                     style="@style/InputForm"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:hint="Gaji Bulan Ini" />
 
                 <TextView style="@style/LabelForm" android:text="Nominal (Rp) *" />
@@ -96,10 +98,31 @@
                 </LinearLayout>
 
                 <TextView style="@style/LabelForm" android:text="Kategori" />
-                <EditText
-                    android:id="@+id/etCategory"
-                    style="@style/InputForm"
-                    android:hint="Gaji" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <Spinner
+                        android:id="@+id/spCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_form"
+                        android:paddingStart="8dp"
+                        android:spinnerMode="dropdown" />
+
+                    <ImageButton
+                        android:id="@+id/btnAddCategory"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_input_form"
+                        android:src="@android:drawable/ic_input_add"
+                        app:tint="@color/purple_primary" />
+                </LinearLayout>
 
                 <TextView style="@style/LabelForm" android:text="Catatan (opsional)" />
                 <EditText
