@@ -20,18 +20,24 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment utama yang menampilkan ringkasan saldo, pemasukan, pengeluaran,
+ * dan daftar riwayat transaksi terbaru.
+ */
 public class DashboardFragment extends Fragment {
     private RecyclerView rv;
     private DatabaseHelper dbHelper;
     private TextView tvTotalBalance, tvTotalIncome, tvTotalExpense;
     private FloatingActionButton btnGoToAdd;
-    private DecimalFormat df = new DecimalFormat("#,###");
+    private DecimalFormat df = new DecimalFormat("#,###"); // Format angka ribuan
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate layout dashboard
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
+        // Inisialisasi komponen UI
         tvTotalBalance = view.findViewById(R.id.tvTotalBalance);
         tvTotalIncome = view.findViewById(R.id.tvTotalIncome);
         tvTotalExpense = view.findViewById(R.id.tvTotalExpense);
@@ -39,8 +45,10 @@ public class DashboardFragment extends Fragment {
         btnGoToAdd = view.findViewById(R.id.btnGoToAdd);
         dbHelper = new DatabaseHelper(getContext());
 
+        // Memuat data dari database
         loadData();
 
+        // Navigasi ke fragment tambah transaksi
         btnGoToAdd.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.container, new AddTransactionFragment())
@@ -51,9 +59,14 @@ public class DashboardFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Mengambil data transaksi dari database, menghitung total,
+     * dan menampilkannya ke RecyclerView.
+     */
     private void loadData() {
         List<Transaction> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // Ambil semua transaksi diurutkan dari yang terbaru (ID terbesar)
         Cursor cursor = db.rawQuery("SELECT * FROM transactions ORDER BY id DESC", null);
 
         double balance = 0;
@@ -62,6 +75,7 @@ public class DashboardFragment extends Fragment {
 
         if (cursor.moveToFirst()) {
             do {
+                // Ekstraksi data dari cursor
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                 String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
                 String type = cursor.getString(cursor.getColumnIndexOrThrow("type"));
@@ -70,8 +84,10 @@ public class DashboardFragment extends Fragment {
                 String notes = cursor.getString(cursor.getColumnIndexOrThrow("notes"));
                 String date = cursor.getString(cursor.getColumnIndexOrThrow("date"));
 
+                // Tambahkan ke list untuk adapter
                 list.add(new Transaction(id, title, type, amt, category, notes, date));
 
+                // Kalkulasi total berdasarkan tipe
                 if ("Pemasukan".equals(type)) {
                     income += amt;
                     balance += amt;
@@ -83,12 +99,15 @@ public class DashboardFragment extends Fragment {
         }
         cursor.close();
 
+        // Tampilkan hasil kalkulasi dengan format rupiah
         tvTotalBalance.setText("Rp " + df.format(balance).replace(',', '.'));
         tvTotalIncome.setText("Rp " + df.format(income).replace(',', '.'));
         tvTotalExpense.setText("Rp " + df.format(expense).replace(',', '.'));
 
+        // Setup RecyclerView dan Adapter
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new TransactionAdapter(list, transaction -> {
+            // Callback ketika item diklik: Buka Fragment AddTransaction dalam mode edit
             AddTransactionFragment fragment = new AddTransactionFragment();
             Bundle bundle = new Bundle();
             bundle.putInt("id", transaction.getId());

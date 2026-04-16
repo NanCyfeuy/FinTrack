@@ -28,21 +28,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Fragment untuk menambah atau memperbarui transaksi (Pemasukan/Pengeluaran).
+ */
 public class AddTransactionFragment extends Fragment {
     private DatabaseHelper dbHelper;
     private EditText etAmount, etTitle, etNotes;
     private Spinner spCategory;
     private ImageButton btnAddCategory;
     private Button btnTypeIncome, btnTypeExpense, btnSave, btnDelete;
-    private String selectedType = "Pemasukan";
-    private int transactionId = -1;
+    private String selectedType = "Pemasukan"; // Default tipe transaksi
+    private int transactionId = -1; // -1 berarti transaksi baru
     private String initialCategory = "";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate layout untuk fragment ini
         View view = inflater.inflate(R.layout.fragment_add_transaction, container, false);
 
+        // Inisialisasi Database Helper dan View
         dbHelper = new DatabaseHelper(getContext());
         etTitle = view.findViewById(R.id.etTitle);
         etAmount = view.findViewById(R.id.etAmount);
@@ -54,8 +59,10 @@ public class AddTransactionFragment extends Fragment {
         btnSave = view.findViewById(R.id.btnSave);
         btnDelete = view.findViewById(R.id.btnDelete);
 
+        // Memuat kategori ke dalam Spinner
         loadCategories();
 
+        // Cek jika ada data yang dikirim (mode edit)
         if (getArguments() != null) {
             transactionId = getArguments().getInt("id", -1);
             etTitle.setText(getArguments().getString("title"));
@@ -70,17 +77,21 @@ public class AddTransactionFragment extends Fragment {
             setSpinnerToValue(spCategory, initialCategory);
         }
 
+        // Listener untuk menambah kategori baru
         btnAddCategory.setOnClickListener(v -> showAddCategoryDialog());
 
+        // Listener untuk memilih tipe transaksi
         btnTypeIncome.setOnClickListener(v -> selectType("Pemasukan"));
         btnTypeExpense.setOnClickListener(v -> selectType("Pengeluaran"));
 
-        // Default state
+        // Set status default tombol tipe
         selectType(selectedType);
 
+        // Listener untuk tombol simpan dan hapus
         btnSave.setOnClickListener(v -> saveData());
         btnDelete.setOnClickListener(v -> deleteData());
 
+        // Menyembunyikan keyboard saat berinteraksi dengan Spinner
         spCategory.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
@@ -103,6 +114,9 @@ public class AddTransactionFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Menyembunyikan keyboard virtual.
+     */
     private void hideKeyboard() {
         View view = getActivity().getCurrentFocus();
         if (view != null) {
@@ -111,6 +125,9 @@ public class AddTransactionFragment extends Fragment {
         }
     }
 
+    /**
+     * Memuat daftar kategori dari database ke Spinner.
+     */
     private void loadCategories() {
         List<String> categories = dbHelper.getAllCategories();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, categories);
@@ -118,6 +135,9 @@ public class AddTransactionFragment extends Fragment {
         spCategory.setAdapter(adapter);
     }
 
+    /**
+     * Mengatur posisi Spinner berdasarkan nilai string.
+     */
     private void setSpinnerToValue(Spinner spinner, String value) {
         ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
         for (int position = 0; position < adapter.getCount(); position++) {
@@ -128,6 +148,9 @@ public class AddTransactionFragment extends Fragment {
         }
     }
 
+    /**
+     * Menampilkan dialog untuk input kategori baru.
+     */
     private void showAddCategoryDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Tambah Kategori Baru");
@@ -149,33 +172,38 @@ public class AddTransactionFragment extends Fragment {
         builder.show();
     }
 
+    /**
+     * Mengatur UI tombol Pemasukan/Pengeluaran saat dipilih.
+     */
     private void selectType(String type) {
         selectedType = type;
         if (type.equals("Pemasukan")) {
-            // Selected Income: Transparan Hijau & Teks Hijau
+            // Hijau untuk Pemasukan
             btnTypeIncome.setBackgroundResource(R.drawable.bg_btn_type_selected_income);
             btnTypeIncome.setTextColor(ContextCompat.getColor(requireContext(), R.color.income_green));
             
-            // Unselected Expense: Putih Keabu-abuan & Teks Hitam
             btnTypeExpense.setBackgroundResource(R.drawable.bg_btn_type_unselected);
             btnTypeExpense.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         } else {
-            // Selected Expense: Transparan Merah & Teks Merah
+            // Merah untuk Pengeluaran
             btnTypeExpense.setBackgroundResource(R.drawable.bg_btn_type_selected_expense);
             btnTypeExpense.setTextColor(ContextCompat.getColor(requireContext(), R.color.expense_red));
             
-            // Unselected Income: Putih Keabu-abuan & Teks Hitam
             btnTypeIncome.setBackgroundResource(R.drawable.bg_btn_type_unselected);
             btnTypeIncome.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         }
     }
 
+    /**
+     * Menyimpan data transaksi ke database (Insert atau Update).
+     */
     private void saveData() {
         String title = etTitle.getText().toString();
         String amountStr = etAmount.getText().toString();
         String category = spCategory.getSelectedItem() != null ? spCategory.getSelectedItem().toString() : "";
         String notes = etNotes.getText().toString();
 
+        // Validasi input
         if (title.isEmpty() || amountStr.isEmpty()) {
             Toast.makeText(getContext(), "Judul dan Nominal harus diisi", Toast.LENGTH_SHORT).show();
             return;
@@ -185,6 +213,7 @@ public class AddTransactionFragment extends Fragment {
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
         if (transactionId == -1) {
+            // Simpan transaksi baru
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("title", title);
@@ -197,13 +226,18 @@ public class AddTransactionFragment extends Fragment {
             db.close();
             Toast.makeText(getContext(), "Berhasil disimpan", Toast.LENGTH_SHORT).show();
         } else {
+            // Update transaksi yang ada
             dbHelper.updateTransaction(transactionId, title, selectedType, amount, category, notes, currentDate);
             Toast.makeText(getContext(), "Berhasil diperbarui", Toast.LENGTH_SHORT).show();
         }
         
+        // Kembali ke layar sebelumnya
         getParentFragmentManager().popBackStack();
     }
 
+    /**
+     * Menghapus transaksi dari database.
+     */
     private void deleteData() {
         if (transactionId != -1) {
             dbHelper.deleteTransaction(transactionId);
