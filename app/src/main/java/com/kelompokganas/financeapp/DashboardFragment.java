@@ -48,7 +48,7 @@ public class DashboardFragment extends Fragment {
         // Memuat data dari database
         loadData();
 
-        // Navigasi ke fragment tambah transaksi ketika tombol diklik
+        // Navigasi ke fragment tambah transaksi
         btnGoToAdd.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.container, new AddTransactionFragment())
